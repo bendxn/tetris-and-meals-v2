@@ -32,30 +32,26 @@ if (Meteor.isClient) {
 
 	Template.actions.events({
 		'click button': function() {
-			var selectedPeople = Session.get('selectedPeople');
+			var selectedPeople = People.find({
+				_id: {
+					$in: Session.get('selectedPeople')
+				}
+			}).fetch();
 			var itIsLunch = moment().isBefore(moment('2:30 PM', 'h:mm A'));
 			var selectedPerson;
 			if (itIsLunch) {
-				selectedPerson = People.findOne({
-					_id: {
-						$in: selectedPeople
-					}
-				}, {
-					sort: {
-						lunchScore: -1
-					}
-				});
+				var maxLunchScore = _.max(selectedPeople, function(person) {
+					return person.lunchScore;
+				}).lunchScore;
+				var eligiblePeople = _.groupBy(selectedPeople, 'lunchScore')[maxLunchScore];
+				selectedPerson = _.sample(eligiblePeople);
 				Meteor.call('updateLunchScores', selectedPerson, selectedPeople);
 			} else {
-				selectedPerson = People.findOne({
-					_id: {
-						$in: selectedPeople
-					}
-				}, {
-					sort: {
-						dinnerScore: -1
-					}
-				});
+				var maxDinnerScore = _.max(selectedPeople, function(person) {
+					return person.dinnerScore;
+				}).dinnerScore;
+				var eligiblePeople = _.groupBy(selectedPeople, 'dinnerScore')[maxDinnerScore];
+				selectedPerson = _.sample(eligiblePeople);
 				Meteor.call('updateDinnerScores', selectedPerson, selectedPeople);
 			}
 			alert(selectedPerson.name);
@@ -73,9 +69,9 @@ Meteor.methods({
 		})
 		People.update({
 			_id: {
-				$in: _.reject(selectedPeople, function(id) {
-					return id === selectedPerson._id;
-				})
+				$in: _.pluck(_.reject(selectedPeople, function(person) {
+					return person._id === selectedPerson._id;
+				}), '_id')
 			}
 		}, {
 			$inc: {
@@ -93,9 +89,9 @@ Meteor.methods({
 		})
 		People.update({
 			_id: {
-				$in: _.reject(selectedPeople, function(id) {
-					return id === selectedPerson._id;
-				})
+				$in: _.pluck(_.reject(selectedPeople, function(person) {
+					return person._id === selectedPerson._id;
+				}), '_id')
 			}
 		}, {
 			$inc: {
