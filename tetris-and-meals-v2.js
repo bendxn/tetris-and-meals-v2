@@ -5,7 +5,7 @@ if (Meteor.isClient) {
 		return People.find();
 	};
 	Template.list.time = function() {
-		return new Date().getHours();
+		return moment().format('hh:mm A');
 	}
 	Session.set('selectedPeople', []);
 	Template.person.selected = function() {
@@ -31,14 +31,13 @@ if (Meteor.isClient) {
 	Template.actions.events({
 		'click button': function() {
 			var selectedPeople = Session.get('selectedPeople');
-			var itIsLunch = new Date().getHours() < 14;
+			var itIsLunch = moment().isBefore(moment('2:30 PM', 'h:mm A'));
 			var selectedPerson;
 			if (itIsLunch) {
 				selectedPerson = People.findOne({_id: {$in: selectedPeople}}, {sort: {lunchScore: -1}});
 				Meteor.call('updateLunchScores', selectedPerson, selectedPeople);
 			} else {
 				selectedPerson = People.findOne({_id: {$in: selectedPeople}}, {sort: {dinnerScore: -1}});
-				People.update(selectedPerson._id, {$inc: {dinnerScore: -selectedPeople.length}})
 				Meteor.call('updateDinnerScores', selectedPerson, selectedPeople);
 			}
 			alert(selectedPerson.name);
@@ -49,12 +48,15 @@ if (Meteor.isClient) {
 
 Meteor.methods({
 	updateLunchScores: function(selectedPerson, selectedPeople) {
-		People.update(selectedPerson._id, {$inc: {lunchScore: -selectedPeople.length}})
+		People.update(selectedPerson._id, {$inc: {lunchScore: -(selectedPeople.length - 1)}})
 		People.update({_id: {$in: _.reject(selectedPeople, function(id) { return id === selectedPerson._id; })}}, {$inc: {lunchScore: 1}}, {multi: true});
 	},
 	updateDinnerScores: function(selectedPerson, selectedPeople) {
-		People.update(selectedPerson._id, {$inc: {dinnerScore: -selectedPeople.length}})
+		People.update(selectedPerson._id, {$inc: {dinnerScore: -(selectedPeople.length - 1)}})
 		People.update({_id: {$in: _.reject(selectedPeople, function(id) { return id === selectedPerson._id; })}}, {$inc: {dinnerScore: 1}}, {multi: true});
+	},
+	resetLunch: function() {
+		People.update({}, {$set: {lunchScore: 0}}, {multi: true});
 	}
 });
 
