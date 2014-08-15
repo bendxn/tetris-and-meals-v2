@@ -77,7 +77,9 @@ if (Meteor.isClient) {
 				Meteor.call('updateLunchScores', selectedPerson, selectedPeople);
 			else
 				Meteor.call('updateDinnerScores', selectedPerson, selectedPeople);
-			Meteor.call('resetSession');
+			Session.set('selectedPeople', []);
+			Session.set('selectedPerson', null);
+			Session.set('mealType', '');
 		}
 	});
 
@@ -175,11 +177,6 @@ Meteor.methods({
 		}, {
 			multi: true
 		});
-	},
-	resetSession: function() {
-		Session.set('selectedPeople', []);
-		Session.set('selectedPerson', null);
-		Session.set('mealType', null);
 	}
 });
 
@@ -203,8 +200,4 @@ Router.map(function() {
 	this.route('addPayment', {
 		path: '/add'
 	});
-});
-
-Router.onRun(function() {
-	Meteor.call('resetSession');
 });
