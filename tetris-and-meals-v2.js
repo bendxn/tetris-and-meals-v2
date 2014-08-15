@@ -30,6 +30,63 @@ if (Meteor.isClient) {
 		return Session.get('selectedPeople').length > 1;
 	};
 
+	Template.singleSelection.people = function() {
+		return People.find();
+	};
+
+	Template.singlePerson.selected = function() {
+		return Session.get('selectedPerson') === this._id ? 'selected' : '';
+	};
+
+	Template.singlePerson.events({
+		'click': function() {
+			var selectedPerson = Session.get('selectedPerson');
+			var selectedPersonId = this._id;
+			if (selectedPerson === selectedPersonId)
+				Session.set('selectedPerson', null);
+			else
+				Session.set('selectedPerson', selectedPersonId);
+		}
+	});
+
+	Template.mealType.lunchSelected = function() {
+		return Session.get('mealType') === 'Lunch' ? 'selected' : '';
+	};
+
+	Template.mealType.dinnerSelected = function() {
+		return Session.get('mealType') === 'Dinner' ? 'selected' : '';
+	};
+
+	Template.addPayment.formValid = function() {
+		return Session.get('selectedPeople').length > 1 &&
+			Session.get('selectedPerson') != null &&
+			_.contains(Session.get('selectedPeople'), Session.get('selectedPerson')) &&
+			Session.get('mealType') != null;
+	};
+
+	Template.addPayment.events({
+		'click #submit': function() {
+			var selectedPeople = People.find({
+				_id: {
+					$in: Session.get('selectedPeople')
+				}
+			}).fetch();
+			var isLunch = Session.get('mealType') === 'Lunch';
+			var selectedPerson = People.findOne(Session.get('selectedPerson'));
+			if (isLunch)
+				Meteor.call('updateLunchScores', selectedPerson, selectedPeople);
+			else
+				Meteor.call('updateDinnerScores', selectedPerson, selectedPeople);
+			Meteor.call('resetSession');
+		}
+	});
+
+	Template.mealType.events({
+		'click h1': function(event) {
+			Session.set('mealType', event.target.textContent);
+		}
+	});
+
 	Template.actions.events({
 		'click button': function() {
 			var selectedPeople = People.find({
@@ -37,9 +94,9 @@ if (Meteor.isClient) {
 					$in: Session.get('selectedPeople')
 				}
 			}).fetch();
-			var itIsLunch = moment().isBefore(moment('2:30 PM', 'h:mm A'));
+			var isLunch = moment().isBefore(moment('2:30 PM', 'h:mm A'));
 			var selectedPerson;
-			if (itIsLunch) {
+			if (isLunch) {
 				var maxLunchScore = _.max(selectedPeople, function(person) {
 					return person.lunchScore;
 				}).lunchScore;
@@ -118,6 +175,11 @@ Meteor.methods({
 		}, {
 			multi: true
 		});
+	},
+	resetSession: function() {
+		Session.set('selectedPeople', []);
+		Session.set('selectedPerson', null);
+		Session.set('mealType', null);
 	}
 });
 
@@ -133,3 +195,16 @@ if (Meteor.isServer) {
 		}
 	});
 }
+
+Router.map(function() {
+	this.route('home', {
+		path: '/'
+	});
+	this.route('addPayment', {
+		path: '/add'
+	});
+});
+
+Router.onRun(function() {
+	Meteor.call('resetSession');
+});

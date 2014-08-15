@@ -4,8 +4,29 @@
 body {
 	background-color: #fdfdfd;
 }
+.btn-lg {
+	font-size: 2.5em;
+	padding: 15px 40px;
+}
+.header {
+	text-align: center;
+	margin: 8px 0;
+}
+.links {
+	text-align: center;
+	font-size: 2em;
+	margin: 15px;
+}
+.header h1 {
+	font-size: 6em;
+}
 .row {
 	text-align: center;
+}
+.prompt {
+	text-align: left;
+	font-size: 2.5em;
+	padding: 0 15px;
 }
 .name {
 	cursor: pointer;

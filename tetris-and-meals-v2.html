@@ -1,13 +1,25 @@
 <head>
-	<title>tetris-and-meals-v2</title>
+	<link rel="icon" sizes="16x16 32x32" href="/favicon.ico?v=2">
+	<title>Tetris and Meals v2</title>
 </head>
 
 <body>
-	<div class="container">
-		{{> list}}
-		{{> actions}}
-	</div>
 </body>
+
+<template name="home">
+	<div class="header">
+		<h1>Tetris and Meals v2</h1>
+	</div>
+	<div class="links">
+	<a href="{{pathFor 'addPayment'}}">Add a payment</a>
+	</div>
+	<div class="container">
+		<div class="well">
+			{{> list}}
+			{{> actions}}
+		</div>
+	</div>
+</template>
 
 <template name="list">
 	<div class="row">
@@ -28,8 +40,63 @@
 
 <template name="actions">
 	{{#if peopleSelected}}
-	<div class="row">
-		<button class="btn btn-lg btn-primary">Who pays?</button>
-	</div>
+		<div class="row">
+			<button type="button" class="btn btn-lg btn-primary">Who pays?</button>
+		</div>
 	{{/if}}
+</template>
+
+<template name="addPayment">
+	<div class="header">
+		<h1>Add a Payment</h1>
+	</div>
+	<div class="links">
+		<a href="{{pathFor 'home'}}">Home</a>
+	</div>
+	<div class="container">
+		<div class="well">
+			<div class="row prompt">Who paid?</div>
+			{{> singleSelection}}
+		</div>
+		<div class="well">
+			<div class="row prompt">Who was there?</div>
+			{{> list}}
+		</div>
+		<div class="well">
+			<div class="row prompt">What meal was it?</div>
+			{{> mealType}}
+		</div>
+		{{#if formValid}}
+			<div class="row" style="margin-bottom: 15px">
+				<button type="button" id="submit" class="btn btn-lg btn-primary">Submit</button>
+			</div>
+		{{/if}}
+	</div>
+</template>
+
+<template name="singleSelection">
+	<div class="row">
+		{{#each people}}
+			{{> singlePerson}}
+		{{/each}}
+	</div>
+</template>
+
+<template name="singlePerson">
+	<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+		<h1 class="name {{selected}}">{{name}}</h1>
+		Lunch: {{lunchScore}}
+		Dinner: {{dinnerScore}}
+	</div>
+</template>
+
+<template name="mealType">
+	<div class="row">
+		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+			<h1 class="name {{lunchSelected}}">Lunch</h1>
+		</div>
+		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+			<h1 class="name {{dinnerSelected}}">Dinner</h1>
+		</div>
+	</div>
 </template>
