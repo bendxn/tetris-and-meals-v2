@@ -1,0 +1,26 @@
+<head>
+  <title>tetris-and-meals-v2</title>
+</head>
+
+<body>
+  {{> list}}
+  {{> actions}}
+</body>
+
+<template name="list">
+	{{#each people}}
+		{{> person}}
+	{{/each}}
+</template>
+
+<template name="person">
+	<h1 class="{{selected}}">{{name}}</h1>
+	{{lunchScore}}
+	{{dinnerScore}}
+</template>
+
+<template name="actions">
+	{{#if peopleSelected}}
+		<button class="btn btn-info">Who pays?</button>
+	{{/if}}
+</template>
