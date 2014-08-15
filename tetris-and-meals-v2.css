@@ -1,3 +1,9 @@
+.row {
+	text-align: center;
+}
+.name {
+	cursor: pointer;
+}
 .selected {
 	background-color: cornflowerblue;
 }

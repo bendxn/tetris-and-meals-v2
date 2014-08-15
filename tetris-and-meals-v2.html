@@ -1,26 +1,37 @@
 <head>
-  <title>tetris-and-meals-v2</title>
+	<title>tetris-and-meals-v2</title>
 </head>
 
 <body>
-  {{> list}}
-  {{> actions}}
+	<div class="container">
+		{{> list}}
+		{{> actions}}
+	</div>
 </body>
 
 <template name="list">
-	{{#each people}}
-		{{> person}}
-	{{/each}}
+	<div>
+		{{#each people}}
+			<div class="row">
+				{{> person}}
+			</div>
+		{{/each}}
+	</div>
+	<div class="row">{{time}}</div>
 </template>
 
 <template name="person">
-	<h1 class="{{selected}}">{{name}}</h1>
-	{{lunchScore}}
-	{{dinnerScore}}
+	<div class="col-xs-12 col-md-12 col-lg-12">
+		<h1 class="name {{selected}}">{{name}}</h1>
+		Lunch: {{lunchScore}}
+		Dinner: {{dinnerScore}}
+	</div>
 </template>
 
 <template name="actions">
 	{{#if peopleSelected}}
-		<button class="btn btn-info">Who pays?</button>
+	<div class="row">
+		<button class="btn btn-lg btn-primary">Who pays?</button>
+	</div>
 	{{/if}}
 </template>

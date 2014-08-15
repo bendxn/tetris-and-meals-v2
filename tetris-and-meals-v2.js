@@ -4,6 +4,9 @@ if (Meteor.isClient) {
 	Template.list.people = function() {
 		return People.find();
 	};
+	Template.list.time = function() {
+		return new Date().getHours();
+	}
 	Session.set('selectedPeople', []);
 	Template.person.selected = function() {
 		var selectedPeople = Session.get('selectedPeople');
@@ -22,7 +25,7 @@ if (Meteor.isClient) {
 	});
 
 	Template.actions.peopleSelected = function() {
-		return Session.get('selectedPeople').length > 0;
+		return Session.get('selectedPeople').length > 1;
 	};
 
 	Template.actions.events({
@@ -30,14 +33,30 @@ if (Meteor.isClient) {
 			var selectedPeople = Session.get('selectedPeople');
 			var itIsLunch = new Date().getHours() < 14;
 			var selectedPerson;
-			if (itIsLunch)
+			if (itIsLunch) {
 				selectedPerson = People.findOne({_id: {$in: selectedPeople}}, {sort: {lunchScore: -1}});
-			else
+				Meteor.call('updateLunchScores', selectedPerson, selectedPeople);
+			} else {
 				selectedPerson = People.findOne({_id: {$in: selectedPeople}}, {sort: {dinnerScore: -1}});
+				People.update(selectedPerson._id, {$inc: {dinnerScore: -selectedPeople.length}})
+				Meteor.call('updateDinnerScores', selectedPerson, selectedPeople);
+			}
 			alert(selectedPerson.name);
+			Session.set('selectedPeople', []);
 		}
 	});
 }
+
+Meteor.methods({
+	updateLunchScores: function(selectedPerson, selectedPeople) {
+		People.update(selectedPerson._id, {$inc: {lunchScore: -selectedPeople.length}})
+		People.update({_id: {$in: _.reject(selectedPeople, function(id) { return id === selectedPerson._id; })}}, {$inc: {lunchScore: 1}}, {multi: true});
+	},
+	updateDinnerScores: function(selectedPerson, selectedPeople) {
+		People.update(selectedPerson._id, {$inc: {dinnerScore: -selectedPeople.length}})
+		People.update({_id: {$in: _.reject(selectedPeople, function(id) { return id === selectedPerson._id; })}}, {$inc: {dinnerScore: 1}}, {multi: true});
+	}
+});
 
 if (Meteor.isServer) {
 	Meteor.startup(function () {
