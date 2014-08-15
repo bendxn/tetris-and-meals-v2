@@ -10,18 +10,16 @@
 </body>
 
 <template name="list">
-	<div>
+	<div class="row">
 		{{#each people}}
-			<div class="row">
-				{{> person}}
-			</div>
+			{{> person}}
 		{{/each}}
 	</div>
 	<div class="row">{{time}}</div>
 </template>
 
 <template name="person">
-	<div class="col-xs-12 col-md-12 col-lg-12">
+	<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 		<h1 class="name {{selected}}">{{name}}</h1>
 		Lunch: {{lunchScore}}
 		Dinner: {{dinnerScore}}
