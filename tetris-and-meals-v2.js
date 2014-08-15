@@ -1,13 +1,19 @@
 People = new Meteor.Collection('people');
 
 if (Meteor.isClient) {
+	Router.onRun(function() {
+		Session.set('selectedPeople', []);
+		Session.set('selectedPerson', null);
+		Session.set('mealType', null);
+	});
+
 	Template.list.people = function() {
 		return People.find();
 	};
 	Template.list.time = function() {
 		return moment().format('hh:mm A');
 	}
-	Session.set('selectedPeople', []);
+
 	Template.person.selected = function() {
 		var selectedPeople = Session.get('selectedPeople');
 		return _.contains(selectedPeople, this._id) ? 'selected' : '';
