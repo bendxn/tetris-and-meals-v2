@@ -110,16 +110,17 @@ if (Meteor.isClient) {
 				}).lunchScore;
 				var eligiblePeople = _.groupBy(selectedPeople, 'lunchScore')[maxLunchScore];
 				selectedPerson = _.sample(eligiblePeople);
-				Meteor.call('updateLunchScores', selectedPerson, selectedPeople);
+				if (confirm('It\'s ' + selectedPerson.name + '\'s turn to pay!'))
+					Meteor.call('updateLunchScores', selectedPerson, selectedPeople);
 			} else {
 				var maxDinnerScore = _.max(selectedPeople, function(person) {
 					return person.dinnerScore;
 				}).dinnerScore;
 				var eligiblePeople = _.groupBy(selectedPeople, 'dinnerScore')[maxDinnerScore];
 				selectedPerson = _.sample(eligiblePeople);
-				Meteor.call('updateDinnerScores', selectedPerson, selectedPeople);
+				if (confirm('It\'s ' + selectedPerson.name + '\'s turn to pay!'))
+					Meteor.call('updateDinnerScores', selectedPerson, selectedPeople);
 			}
-			alert(selectedPerson.name);
 			Session.set('selectedPeople', []);
 		}
 	});
