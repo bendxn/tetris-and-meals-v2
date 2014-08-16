@@ -5,7 +5,7 @@ body {
 	background-color: #fdfdfd;
 }
 .btn-lg {
-	font-size: 2.5em;
+	font-size: 1.5em;
 	padding: 15px 40px;
 }
 .header {
@@ -14,24 +14,24 @@ body {
 }
 .links {
 	text-align: center;
-	font-size: 2em;
+	font-size: 1.5em;
 	margin: 15px;
 }
 .header h1 {
-	font-size: 6em;
+	font-size: 4em;
 }
 .row {
 	text-align: center;
 }
 .prompt {
 	text-align: left;
-	font-size: 2.5em;
+	font-size: 1.5em;
 	padding: 0 15px;
 }
 .name {
 	cursor: pointer;
 	background-color: white;
-	font-size: 4em;
+	font-size: 3em;
 	border: 1px #999 solid;
 	border-radius: 5px;
 	padding: 8px 0;
@@ -44,4 +44,10 @@ body {
 }
 .selected:hover {
 	background-color: #09f;
+}
+.scores {
+	font-size: 0.75em;
+}
+.time {
+	font-size: 0.75em;
 }
