@@ -27,6 +27,7 @@ body {
 	text-align: left;
 	font-size: 1.5em;
 	padding: 0 15px;
+	color: #666;
 }
 .name {
 	cursor: pointer;
