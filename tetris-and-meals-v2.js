@@ -19,6 +19,11 @@ if (Meteor.isClient) {
 		return _.contains(selectedPeople, this._id) ? 'selected' : '';
 	};
 
+
+	Template.list.debugOn = Template.singlePerson.debugOn = Template.person.debugOn = function() {
+		return Session.get('debug');
+	};
+
 	Template.person.events({
 		'click': function() {
 			var selectedPeople = Session.get('selectedPeople');

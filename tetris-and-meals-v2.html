@@ -28,16 +28,20 @@
 			{{> person}}
 		{{/each}}
 	</div>
+	{{#if debugOn}}
 	<div class="row time">{{time}}</div>
+	{{/if}}
 </template>
 
 <template name="person">
 	<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
 		<h1 class="name {{selected}}">{{name}}</h1>
+		{{#if debugOn}}
 		<div class="scores">
 			Lunch: {{lunchScore}}
 			Dinner: {{dinnerScore}}
 		</div>
+		{{/if}}
 	</div>
 </template>
 
@@ -88,10 +92,12 @@
 <template name="singlePerson">
 	<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
 		<h1 class="name {{selected}}">{{name}}</h1>
+		{{#if debugOn}}
 		<div class="scores">
 			Lunch: {{lunchScore}}
 			Dinner: {{dinnerScore}}
 		</div>
+		{{/if}}
 	</div>
 </template>
 
