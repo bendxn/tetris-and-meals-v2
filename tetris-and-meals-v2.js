@@ -92,29 +92,26 @@ if (Meteor.isClient) {
 		}
 	})
 
-	Template.history.people = function () {
-		return People.find();
-	};
-
-	Template.history.history = function () {
-		return History.find({}, { sort: { time: -1 }, limit: 50});
-	};
-
-	Template.history.paid = function (row) {
-		return row.paid === this._id;
-	};
-
-	Template.history.profited = function (row) {
-		return row.paid !== this._id && row.people.indexOf(this._id) !== -1;
-	};
-
-	Template.history.paidText = function (row) {
-		return new Array(row.people.length).join('-');
-	}
-
-	Template.history.profitedText = function () {
-		return '+';
-	}
+	Template.history.helpers({
+		people: function () {
+			return People.find();
+		},
+		history: function () {
+			return History.find({}, { sort: { time: -1 }, limit: 50});
+		},
+		paid: function (row) {
+			return row.paid === this._id;
+		},
+		profited: function (row) {
+			return row.paid !== this._id && row.people.indexOf(this._id) !== -1;
+		},
+		paidText: function (row) {
+			return new Array(row.people.length).join('-');
+		},
+		profitedText: function () {
+			return '+';
+		},
+	});
 
 	Template.addPayment.events({
 		'click #submit': function() {
