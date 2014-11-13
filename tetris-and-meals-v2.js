@@ -1,4 +1,5 @@
 People = new Meteor.Collection('people');
+History = new Meteor.Collection('history');
 
 if (Meteor.isClient) {
 	Router.onRun(function() {
@@ -91,6 +92,30 @@ if (Meteor.isClient) {
 		}
 	})
 
+	Template.history.people = function () {
+		return People.find();
+	};
+
+	Template.history.history = function () {
+		return History.find({}, { sort: { time: -1 }, limit: 50});
+	};
+
+	Template.history.paid = function (row) {
+		return row.paid === this._id;
+	};
+
+	Template.history.profited = function (row) {
+		return row.paid !== this._id && row.people.indexOf(this._id) !== -1;
+	};
+
+	Template.history.paidText = function (row) {
+		return new Array(row.people.length).join('-');
+	}
+
+	Template.history.profitedText = function () {
+		return '+';
+	}
+
 	Template.addPayment.events({
 		'click #submit': function() {
 			var selectedPeople = People.find({
@@ -167,6 +192,12 @@ Meteor.methods({
 		}, {
 			multi: true
 		});
+		History.insert({
+			paid: selectedPerson._id,
+			people: selectedPeople.map(function (person) { return person._id; }),
+			type: 'lunch',
+			time: new Date()
+		});
 	},
 	updateDinnerScores: function(selectedPerson, selectedPeople) {
 		People.update(selectedPerson._id, {
@@ -186,6 +217,12 @@ Meteor.methods({
 			}
 		}, {
 			multi: true
+		});
+		History.insert({
+			paid: selectedPerson,
+			people: selectedPeople,
+			type: 'dinner',
+			time: new Date()
 		});
 	},
 	resetLunch: function() {
@@ -212,10 +249,24 @@ if (Meteor.isServer) {
 	Meteor.startup(function() {
 		if (People.find().count() === 0) {
 			People.remove({});
-			People.insert({
+			[{
 				name: 'Ben',
 				lunchScore: 0,
 				dinnerScore: 0
+			}, {
+				name: 'Greg',
+				lunchScore: 0,
+				dinnerScore: 0
+			}, {
+				name: 'Jake',
+				lunchScore: 0,
+				dinnerScore: 0
+			}, {
+				name: 'Ezra',
+				lunchScore: 0,
+				dinnerScore: 0
+			}].forEach(function (person) {
+				People.insert(person);
 			});
 		}
 	});
@@ -227,5 +278,8 @@ Router.map(function() {
 	});
 	this.route('addPayment', {
 		path: '/add'
+	});
+	this.route('history', {
+		path: '/history'
 	});
 });
