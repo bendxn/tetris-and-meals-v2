@@ -6,24 +6,30 @@ if (Meteor.isClient) {
 		Session.set('selectedPeople', []);
 		Session.set('selectedPerson', null);
 		Session.set('mealType', null);
+		this.next();
 	});
 
-	Template.list.people = function() {
-		return People.find();
-	};
-	Template.list.time = function() {
-		return moment().format('hh:mm A');
-	}
-
-	Template.person.selected = function() {
-		var selectedPeople = Session.get('selectedPeople');
-		return _.contains(selectedPeople, this._id) ? 'selected' : '';
-	};
-
-
-	Template.list.debugOn = Template.singlePerson.debugOn = Template.person.debugOn = function() {
+	var debugOn = function() {
 		return Session.get('debug');
 	};
+
+	Template.list.helpers({
+		people: function() {
+			return People.find();
+		},
+		time: function() {
+			return moment().format('hh:mm A');
+		},
+		debugOn: debugOn
+	});
+
+	Template.person.helpers({
+		selected: function() {
+			var selectedPeople = Session.get('selectedPeople');
+			return _.contains(selectedPeople, this._id) ? 'selected' : '';
+		},
+		debugOn: debugOn
+	});
 
 	Template.person.events({
 		'click': function() {
@@ -38,17 +44,24 @@ if (Meteor.isClient) {
 		}
 	});
 
-	Template.actions.peopleSelected = function() {
-		return Session.get('selectedPeople').length > 1;
-	};
+	Template.actions.helpers({
+		peopleSelected: function() {
+			return Session.get('selectedPeople').length > 1;
+		}
+	});
 
-	Template.singleSelection.people = function() {
-		return People.find();
-	};
+	Template.singleSelection.helpers({
+		people: function() {
+			return People.find();
+		}
+	});
 
-	Template.singlePerson.selected = function() {
-		return Session.get('selectedPerson') === this._id ? 'selected' : '';
-	};
+	Template.singlePerson.helpers({
+		selected: function() {
+			return Session.get('selectedPerson') === this._id ? 'selected' : '';
+		},
+		debugOn: debugOn
+	});
 
 	Template.singlePerson.events({
 		'click': function() {
@@ -61,44 +74,44 @@ if (Meteor.isClient) {
 		}
 	});
 
-	Template.mealType.lunchSelected = function() {
-		return Session.get('mealType') === 'Lunch' ? 'selected' : '';
-	};
+	Template.mealType.helpers({
+		lunchSelected: function() {
+			return Session.get('mealType') === 'Lunch' ? 'selected' : '';
+		},
+		dinnerSelected: function() {
+			return Session.get('mealType') === 'Dinner' ? 'selected' : '';
+		}
+	});
 
-	Template.mealType.dinnerSelected = function() {
-		return Session.get('mealType') === 'Dinner' ? 'selected' : '';
-	};
+	Template.addPayment.helpers({
+		formValid: function() {
+			return Session.get('selectedPeople').length > 1 &&
+				Session.get('selectedPerson') != null &&
+				_.contains(Session.get('selectedPeople'), Session.get('selectedPerson')) &&
+				Session.get('mealType') != null;
+		}
+	})
 
-	Template.addPayment.formValid = function() {
-		return Session.get('selectedPeople').length > 1 &&
-			Session.get('selectedPerson') != null &&
-			_.contains(Session.get('selectedPeople'), Session.get('selectedPerson')) &&
-			Session.get('mealType') != null;
-	};
-
-	Template.history.people = function () {
-		return People.find();
-	};
-
-	Template.history.history = function () {
-		return History.find({}, { sort: { time: -1 }, limit: 50});
-	};
-
-	Template.history.paid = function (row) {
-		return row.paid === this._id;
-	};
-
-	Template.history.profited = function (row) {
-		return row.paid !== this._id && row.people.indexOf(this._id) !== -1;
-	};
-
-	Template.history.paidText = function (row) {
-		return new Array(row.people.length).join('-');
-	}
-
-	Template.history.profitedText = function () {
-		return '+';
-	}
+	Template.history.helpers({
+		people: function () {
+			return People.find();
+		},
+		history: function () {
+			return History.find({}, { sort: { time: -1 }, limit: 50});
+		},
+		paid: function (row) {
+			return row.paid === this._id;
+		},
+		profited: function (row) {
+			return row.paid !== this._id && row.people.indexOf(this._id) !== -1;
+		},
+		paidText: function (row) {
+			return new Array(row.people.length).join('-');
+		},
+		profitedText: function () {
+			return '+';
+		},
+	});
 
 	Template.addPayment.events({
 		'click #submit': function() {

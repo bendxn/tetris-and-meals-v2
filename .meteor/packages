@@ -9,4 +9,5 @@ insecure
 underscore
 bootstrap-3
 moment
-iron-router
+iron:router
+
