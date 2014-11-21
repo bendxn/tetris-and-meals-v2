@@ -216,8 +216,8 @@ Meteor.methods({
 			multi: true
 		});
 		History.insert({
-			paid: selectedPerson,
-			people: selectedPeople,
+			paid: selectedPerson._id,
+			people: selectedPeople.map(function (person) { return person._id; }),
 			type: 'dinner',
 			time: new Date()
 		});
