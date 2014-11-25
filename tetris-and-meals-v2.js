@@ -13,6 +13,10 @@ if (Meteor.isClient) {
 		return Session.get('debug');
 	};
 
+	Template.registerHelper('formatDate', function (date) {
+		return (new Date(date)).toDateString();
+	});
+
 	Template.list.helpers({
 		people: function() {
 			return People.find();
@@ -96,8 +100,11 @@ if (Meteor.isClient) {
 		people: function () {
 			return People.find();
 		},
-		history: function () {
-			return History.find({}, { sort: { time: -1 }, limit: 50});
+		lunches: function () {
+			return History.find({ type: 'lunch' }, { sort: { time: -1 }, limit: 50 });
+		},
+		dinners: function () {
+			return History.find({ type: 'dinner' }, { sort: { time: -1 }, limit: 50 });
 		},
 		paid: function (row) {
 			return row.paid === this._id;

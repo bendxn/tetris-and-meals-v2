@@ -123,24 +123,49 @@
 		<a href="{{pathFor 'addPayment'}}">Add a payment</a>
 	</div>
 	<div class="container">
-		<table class="table">
-			<tr>
-				<th></th>
-				{{#each people}}
-				<th>{{name}}</th>
+		<div class="col-md-6">
+			<h2>Lunch</h2>
+			<table class="table">
+				<tr>
+					<th></th>
+					{{#each people}}
+					<th>{{name}}</th>
+					{{/each}}
+				</tr>
+				{{#each lunches}}
+				<tr>
+					<td>{{formatDate time}}</td>
+					{{#each people}}
+					<td>
+						{{#if paid ..}}<span class="paid">{{paidText ..}}</span>{{/if}}
+						{{#if profited ..}}<span class="profited">{{profitedText}}</span>{{/if}}
+					</td>
+					{{/each}}
+				</tr>
 				{{/each}}
-			</tr>
-			{{#each history}}
-			<tr>
-				<td>{{time}}</td>
-				{{#each people}}
-				<td>
-					{{#if paid ..}}<span class="paid">{{paidText ..}}</span>{{/if}}
-					{{#if profited ..}}<span class="profited">{{profitedText}}</span>{{/if}}
-				</td>
+			</table>
+		</div>
+		<div class="col-md-6">
+			<h2>Dinner</h2>
+			<table class="table">
+				<tr>
+					<th></th>
+					{{#each people}}
+					<th>{{name}}</th>
+					{{/each}}
+				</tr>
+				{{#each dinners}}
+				<tr>
+					<td>{{formatDate time}}</td>
+					{{#each people}}
+					<td>
+						{{#if paid ..}}<span class="paid">{{paidText ..}}</span>{{/if}}
+						{{#if profited ..}}<span class="profited">{{profitedText}}</span>{{/if}}
+					</td>
+					{{/each}}
+				</tr>
 				{{/each}}
-			</tr>
-			{{/each}}
-		</table>
+			</table>
+		</div>
 	</div>
 </template>
