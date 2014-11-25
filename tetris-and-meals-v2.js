@@ -14,7 +14,7 @@ if (Meteor.isClient) {
 	};
 
 	Template.registerHelper('formatDate', function (date) {
-		return (new Date(date)).toDateString();
+		return moment(date).format('MMM Do YYYY');
 	});
 
 	Template.list.helpers({

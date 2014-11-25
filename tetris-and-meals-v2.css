@@ -65,3 +65,14 @@ h2 {
 .profited {
 	color: green;
 }
+.history-name {
+	height: 30px;
+	white-space: nowrap;
+}
+.history-name > div {
+	transform: translate(-8px, -8px) rotate(315deg);
+	width: 30px;
+}
+.table {
+	margin-top: 30px;
+}
