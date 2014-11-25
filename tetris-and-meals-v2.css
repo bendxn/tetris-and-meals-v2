@@ -4,6 +4,10 @@
 body {
 	background-color: #fdfdfd;
 }
+h2 {
+	padding-bottom: 8px;
+	border-bottom: 1px dotted #eee;
+}
 .btn-lg {
 	font-size: 1.5em;
 	padding: 15px 40px;
