@@ -5,14 +5,19 @@
 </head>
 
 <body>
+	<div class="login">
+		{{> loginButtons}}
+	</div>
 </body>
 
 <template name="home">
 	<div class="header">
 		<h1>Tetris and Meals v2</h1>
 	</div>
+	{{#if currentUser}}
 	<div class="links">
 		<a href="{{pathFor 'addPayment'}}">Add a payment</a>
+		<a href="{{pathFor 'addPeople'}}">Add people</a>
 		<a href="{{pathFor 'history'}}">Payment history</a>
 	</div>
 	<div class="container">
@@ -21,6 +26,11 @@
 			{{> actions}}
 		</div>
 	</div>
+	{{else}}
+	<div class="container">
+		<p class="lead text-center">You're not signed in. Do that first.</p>
+	</div>
+	{{/if}}
 </template>
 
 <template name="list">
@@ -34,8 +44,19 @@
 	{{/if}}
 </template>
 
+<template name="fullList">
+	<div class="row">
+		{{#each people}}
+			{{> person}}
+		{{/each}}
+	</div>
+	{{#if debugOn}}
+	<div class="row time">{{time}}</div>
+	{{/if}}
+</template>
+
 <template name="person">
-	<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+	<div class="col-xs-12 col-sm-6 col-md-4">
 		<h1 class="name {{selected}}">{{name}}</h1>
 		{{#if debugOn}}
 		<div class="scores">
@@ -60,6 +81,7 @@
 	</div>
 	<div class="links">
 		<a href="{{pathFor 'home'}}">Home</a>
+		<a href="{{pathFor 'addPeople'}}">Add people</a>
 		<a href="{{pathFor 'history'}}">Payment history</a>
 	</div>
 	<div class="container">
@@ -92,7 +114,7 @@
 </template>
 
 <template name="singlePerson">
-	<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+	<div class="col-xs-12 col-sm-6 col-md-4">
 		<h1 class="name {{selected}}">{{name}}</h1>
 		{{#if debugOn}}
 		<div class="scores">
@@ -105,10 +127,10 @@
 
 <template name="mealType">
 	<div class="row">
-		<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+		<div class="col-xs-12 col-sm-6">
 			<h1 class="name {{lunchSelected}}">Lunch</h1>
 		</div>
-		<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+		<div class="col-xs-12 col-sm-6">
 			<h1 class="name {{dinnerSelected}}">Dinner</h1>
 		</div>
 	</div>
@@ -121,9 +143,10 @@
 	<div class="links">
 		<a href="{{pathFor 'home'}}">Home</a>
 		<a href="{{pathFor 'addPayment'}}">Add a payment</a>
+		<a href="{{pathFor 'addPeople'}}">Add people</a>
 	</div>
 	<div class="container">
-		<div class="col-md-6">
+		<div class="col-xs-12 col-md-6">
 			<h2>Lunch</h2>
 			<table class="table">
 				<tr>
@@ -145,7 +168,7 @@
 				{{/each}}
 			</table>
 		</div>
-		<div class="col-md-6">
+		<div class="col-xs-12 col-md-6">
 			<h2>Dinner</h2>
 			<table class="table">
 				<tr>
@@ -167,5 +190,26 @@
 				{{/each}}
 			</table>
 		</div>
+	</div>
+</template>
+
+<template name="addPeople">
+	<div class="header">
+		<h1>Add people</h1>
+	</div>
+	<div class="links">
+		<a href="{{pathFor 'home'}}">Home</a>
+		<a href="{{pathFor 'addPayment'}}">Add a payment</a>
+		<a href="{{pathFor 'history'}}">Payment history</a>
+	</div>
+	<div class="container">
+		<div class="well">
+			{{> fullList}}
+		</div>
+		{{#if changesMade}}
+		<div class="row" style="margin-top: 15px">
+			<button type="button" class="btn btn-lg btn-primary">Save Rotation</button>
+		</div>
+		{{/if}}
 	</div>
 </template>

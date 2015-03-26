@@ -16,6 +16,10 @@ h2 {
 	text-align: center;
 	margin: 8px 0;
 }
+.login {
+	margin-top: 14px;
+	margin-left: 20px;
+}
 .links {
 	text-align: center;
 	font-size: 1.5em;

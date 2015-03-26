@@ -1,23 +1,37 @@
+_ = lodash;
 People = new Meteor.Collection('people');
 History = new Meteor.Collection('history');
 
 if (Meteor.isClient) {
-	Router.onRun(function() {
+	var debugOn = function() {
+		return Session.get('debug');
+	};
+
+	var clearSession = function() {
 		Session.set('selectedPeople', []);
 		Session.set('selectedPerson', null);
 		Session.set('mealType', null);
-		this.next();
-	});
-
-	var debugOn = function() {
-		return Session.get('debug');
 	};
 
 	Template.registerHelper('formatDate', function (date) {
 		return moment(date).format('MMM Do YYYY');
 	});
 
+	Template.home.onDestroyed(function() {
+		clearSession();
+	});
+
 	Template.list.helpers({
+		people: function() {
+			return People.find({_id: {$in: Meteor.user().rotation}});
+		},
+		time: function() {
+			return moment().format('hh:mm A');
+		},
+		debugOn: debugOn
+	});
+
+	Template.fullList.helpers({
 		people: function() {
 			return People.find();
 		},
@@ -56,8 +70,13 @@ if (Meteor.isClient) {
 
 	Template.singleSelection.helpers({
 		people: function() {
-			return People.find();
+			return People.find({_id: {$in: Meteor.user().rotation}});
 		}
+	});
+
+	Template.singleSelection.onDestroyed(function() {
+		Session.set('selectedPerson', null);
+		Session.set('mealType', null);
 	});
 
 	Template.singlePerson.helpers({
@@ -98,13 +117,15 @@ if (Meteor.isClient) {
 
 	Template.history.helpers({
 		people: function () {
-			return People.find();
+			return People.find({_id: {$in: Meteor.user().rotation}});
 		},
 		lunches: function () {
-			return History.find({ type: 'lunch' }, { sort: { time: -1 }, limit: 50 });
+			var notInRotation = _.pluck(People.find({_id: {$nin: Meteor.user().rotation}}).fetch(), '_id');
+			return History.find({ type: 'lunch', people: {$nin: notInRotation}}, { sort: { time: -1 }, limit: 50 });
 		},
 		dinners: function () {
-			return History.find({ type: 'dinner' }, { sort: { time: -1 }, limit: 50 });
+			var notInRotation = _.pluck(People.find({_id: {$nin: Meteor.user().rotation}}).fetch(), '_id');
+			return History.find({ type: 'dinner', people: {$nin: notInRotation}}, { sort: { time: -1 }, limit: 50 });
 		},
 		paid: function (row) {
 			return row.paid === this._id;
@@ -118,6 +139,10 @@ if (Meteor.isClient) {
 		profitedText: function () {
 			return '+';
 		},
+	});
+
+	Template.history.onDestroyed(function() {
+		clearSession();
 	});
 
 	Template.addPayment.events({
@@ -137,6 +162,10 @@ if (Meteor.isClient) {
 			Session.set('selectedPerson', null);
 			Session.set('mealType', '');
 		}
+	});
+
+	Template.addPayment.onDestroyed(function() {
+		clearSession();
 	});
 
 	Template.mealType.events({
@@ -172,6 +201,40 @@ if (Meteor.isClient) {
 					Meteor.call('updateDinnerScores', selectedPerson, selectedPeople);
 			}
 			Session.set('selectedPeople', []);
+		}
+	});
+
+	Template.addPeople.onRendered(function() {
+		var user = Meteor.user();
+		if (user == null || user.rotation == null)
+			return;
+		Session.set('selectedPeople', user.rotation);
+	});
+
+	Template.addPeople.onDestroyed(function() {
+		clearSession();
+	});
+
+	Template.addPeople.helpers({
+		changesMade: function() {
+			var selectedPeople = Session.get('selectedPeople');
+			var userRotation = Meteor.user().rotation;
+			var changes = _.xor(selectedPeople, userRotation).length > 0;
+			return changes;
+		}
+	});
+
+	Template.addPeople.events({
+		'click button': function() {
+			var selectedPeople = People.find({
+				_id: {
+					$in: Session.get('selectedPeople')
+				}
+			}).fetch();
+			var userId = Meteor.userId();
+			if (userId == null)
+				return;
+			Meteor.call('setRotation', userId, selectedPeople);
 		}
 	});
 }
@@ -246,6 +309,9 @@ Meteor.methods({
 		}, {
 			multi: true
 		});
+	},
+	setRotation: function(userId, selectedPeople) {
+		Meteor.users.update({_id: userId}, {$set: {rotation: selectedPeople.map(function(person) { return person._id; })}});
 	}
 });
 
@@ -274,7 +340,30 @@ if (Meteor.isServer) {
 			});
 		}
 	});
+
+	Meteor.publish('rotation', function () {
+		if (this.userId) {
+			return Meteor.users.find(
+				{_id: this.userId},
+				{fields: {'rotation': 1}});
+		} else {
+			this.ready();
+		}
+	});
 }
+
+Router.configure({
+	waitOn: function() {
+		return Meteor.subscribe('rotation');
+	}
+});
+
+Router.onBeforeAction(function() {
+	if (!Meteor.userId())
+		this.render('home');
+	else
+		this.next();
+});
 
 Router.map(function() {
 	this.route('home', {
@@ -285,5 +374,8 @@ Router.map(function() {
 	});
 	this.route('history', {
 		path: '/history'
+	});
+	this.route('addPeople', {
+		path: '/people'
 	});
 });
