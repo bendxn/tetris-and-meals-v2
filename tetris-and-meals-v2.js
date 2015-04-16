@@ -13,6 +13,8 @@ if (Meteor.isClient) {
 		Session.set('mealType', null);
 	};
 
+	clearSession();
+
 	Template.registerHelper('formatDate', function (date) {
 		return moment(date).format('MM/DD');
 	});
@@ -113,7 +115,7 @@ if (Meteor.isClient) {
 				_.contains(Session.get('selectedPeople'), Session.get('selectedPerson')) &&
 				Session.get('mealType') != null;
 		}
-	})
+	});
 
 	Template.history.helpers({
 		people: function () {
