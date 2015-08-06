@@ -6,11 +6,11 @@
 standard-app-packages
 autopublish
 insecure
-bootstrap-3
-moment
 iron:router
 accounts-ui
 accounts-password
 
 accounts-google
 stevezhu:lodash
+twbs:bootstrap
+momentjs:moment
